@@ -4,7 +4,6 @@ const {
   REACT_APP_FEATHERJS_CONNECTION_URL,
   REACT_APP_ETH_NODE_CONNECTION_URL,
   REACT_APP_LIQUIDPLEDGING_ADDRESS,
-  REACT_APP_DAC_FACTORY_ADDRESS,
   REACT_APP_CAMPAIGN_FACTORY_ADDRESS,
   REACT_APP_CAPPED_MILESTONE_FACTORY_ADDRESS,
   REACT_APP_TOKEN_ADDRESSES,
@@ -17,9 +16,8 @@ const configurations = {
   localhost: {
     title: 'Ganache',
     liquidPledgingAddress: '0xBeFdf675cb73813952C5A9E4B84ea8B866DBA592',
-    lppDacFactoryAddress: '0x26b4afb60d6c903165150c6f0aa14f8016be4aec',
-    lppCampaignFactoryAddress: '0x0290FB167208Af455bB137780163b7B7a9a10C16',
-    lppCappedMilestoneFactoryAddress: '0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC',
+    lppCampaignFactoryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0',
+    lppCappedMilestoneFactoryAddress: '0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe',
     givethBridgeAddress: '0x8fed3F9126e7051DeA6c530920cb0BAE5ffa17a8',
     foreignGivethBridgeAddress: '0x8fed3F9126e7051DeA6c530920cb0BAE5ffa17a8',
     tokenAddresses: { 'Home Ganache ETH': '0x5a42ca500aB159c51312B764bb25C135026e7a31' },
@@ -33,13 +31,12 @@ const configurations = {
   },
   develop: {
     title: 'develop',
-    liquidPledgingAddress: '0x06A6743268EbFb2649301f3Ce651C44AbafCC4f5',
-    lppDacFactoryAddress: '0xCD573630fd57d14Ff0f1A653f62Fbe1C8d92a00B',
-    lppCampaignFactoryAddress: '0x2BCaFb4772Ca5525c7b83cEBdd5C48b99183f9f6',
-    lppCappedMilestoneFactoryAddress: '0xb5456EFF4aaA44C60dEb1743caD127Ce1D101466',
-    givethBridgeAddress: '0x8588EE5E97e06bA863FDB2EBc5b523246D459638',
-    foreignGivethBridgeAddress: '0xE91Bf42cb524afa9f01AB56E1804eD162C643d05',
-    tokenAddresses: { 'Ropsten ETH': '0x86c635C10Adf6F982222006B9cc984E1Ccd9c1fC' },
+    liquidPledgingAddress: '0xf0e0F5A752f69Ee6dCfEed138520f6821357dc32',
+    lppCampaignFactoryAddress: '0x3FE8A2f8FE8F5846A428F46B29F3Ed57D23bf2A4',
+    lppCappedMilestoneFactoryAddress: '0x3293E0B22b63550994e994E729C0A98610fD0E2f',
+    givethBridgeAddress: '0x279277482F13aeF92914317a0417DD591145aDc9',
+    foreignGivethBridgeAddress: '0x74f2b28994e9bd00A3B6CD1826Fd29AB76f840F9',
+    tokenAddresses: { 'Ropsten ETH': '0x387871cf72c8CC81E3a945402b0E3A2A6C0Ed38a' },
     etherscan: 'https://rinkeby.etherscan.io/',
     foreignEtherscan: 'https://ropsten.etherscan.io/',
     feathersConnection: 'https://feathers.develop.giveth.io',
@@ -50,16 +47,19 @@ const configurations = {
   },
   release: {
     title: 'release',
-    tokenAddresses: {},
-    liquidPledgingAddress: '0x54b38a066267072734b4f30e0088722fd0811286',
-    lppDacFactoryAddress: '0xfbdabecd51eabd205c5dc7cc8c90fe153c42b94d',
-    lppCampaignFactoryAddress: '0x523c1713fa80bb695ca25f85ee4a06533dceef76',
-    lppCappedMilestoneFactoryAddress: '0x9d8a74f03c7765d689171ffb4004670d2bf30a62',
+    liquidPledgingAddress: '0x8e17d4f6BD5fC32626B4224D0e372E380cfa1082',
+    lppCampaignFactoryAddress: '0xDf1a5AEbF8b4B8a0be6a638b9FBF18FcDDA1A9f5',
+    lppCappedMilestoneFactoryAddress: '0x8A20c8C505648Bfd14e5051A756ccab37912C45f',
+    givethBridgeAddress: '0xC59dCE5CCC065A4b51A2321F857466A25ca49B40',
+    foreignGivethBridgeAddress: '0x9423F77f919f90Ce02a063315A0F604b5D0b7aF6',
+    tokenAddresses: { 'Ropsten ETH': '0x693128E9f785a380823fF00B0b21Dc80707096f5' },
     etherscan: 'https://rinkeby.etherscan.io/',
     foreignEtherscan: 'https://ropsten.etherscan.io/',
     feathersConnection: 'https://feathers.release.giveth.io',
     foreignNodeConnection: 'https://rinkeby.giveth.io',
+    foreignNetworkName: 'Rinkeby',
     homeNodeConnection: 'https://ropsten.giveth.io',
+    homeNetworkName: 'Ropsten',
   },
   mainnet: {
     title: 'mainnet',
@@ -68,18 +68,21 @@ const configurations = {
     foreignNodeConnection: 'https://rinkeby.giveth.io',
     homeNodeConnection: 'https://mew.giveth.io',
   },
-  alpha: {
-    title: 'alpha',
-    liquidPledgingAddress: '0x5625220088cA4Df67F15f96595546D10e9970B3A',
-    lppDacFactoryAddress: '0xc2Cef51f91dE37739F0a105fEDb058E235BB7354',
-    lppCampaignFactoryAddress: '0x2Af51064E9042E62aB09870B4FDe67a1Ba7FEd69',
-    lppCappedMilestoneFactoryAddress: '0x19Bd4E0DEdb9E5Ee9762391893d1f661404b561f',
-    tokenAddresses: {},
-    etherscan: 'https://rinkeby.etherscan.io/',
-    foreignEtherscan: 'https://ropsten.etherscan.io/',
-    feathersConnection: 'https://feathers.alpha.giveth.io',
+  beta: {
+    title: 'beta',
+    liquidPledgingAddress: '0x8eB047585ABeD935a73ba4b9525213F126A0c979',
+    lppCampaignFactoryAddress: '0x71408CE2125b1F07f614b93C8Bd0340e8Fc31CFA',
+    lppCappedMilestoneFactoryAddress: '0x19e88e279844f0201079b39c736a94b87b32b6b6',
+    givethBridgeAddress: '0x30f938fED5dE6e06a9A7Cd2Ac3517131C317B1E7',
+    foreignGivethBridgeAddress: '0xfF9CD5140e79377feB23f6DFaF1f8b558C0FE621',
+    tokenAddresses: { GivETH: '0xe3ee055346a9EfaF4AA2900847dEb04de0195398' },
+    etherscan: 'https://etherscan.io/',
+    foreignEtherscan: 'https://rinkeby.etherscan.io/',
+    feathersConnection: 'https://feathers.beta.giveth.io',
     foreignNodeConnection: 'https://rinkeby.giveth.io',
-    homeNodeConnection: 'https://ropsten.giveth.io',
+    foreignNetworkName: 'Rinkeby',
+    homeNodeConnection: 'https://mew.giveth.io',
+    homeNetworkName: 'Mainnet',
   },
 };
 
@@ -96,7 +99,6 @@ const config = Object.assign({}, configurations[REACT_APP_ENVIRONMENT]);
 
 // Overwrite the environment values with parameters
 config.liquidPledgingAddress = REACT_APP_LIQUIDPLEDGING_ADDRESS || config.liquidPledgingAddress;
-config.dacFactoryAddress = REACT_APP_DAC_FACTORY_ADDRESS || config.lppDacFactoryAddress;
 config.campaignFactoryAddress =
   REACT_APP_CAMPAIGN_FACTORY_ADDRESS || config.lppCampaignFactoryAddress;
 config.cappedMilestoneFactoryAddress =

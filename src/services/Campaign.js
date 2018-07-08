@@ -100,22 +100,31 @@ class CampaignService {
    * Get the user's Campaigns
    *
    * @param userAddress Address of the user whose Campaign list should be retrieved
+   * @param skipPages     Amount of pages to skip
+   * @param itemsPerPage  Items to retreive
    * @param onSuccess   Callback function once response is obtained successfully
    * @param onError     Callback function if error is encountered
    */
-  static getUserCampaigns(userAddress, onSuccess, onError) {
+  static getUserCampaigns(userAddress, skipPages, itemsPerPage, onSuccess, onError) {
     return feathersClient
       .service('campaigns')
       .watch({ listStrategy: 'always' })
       .find({
         query: {
           $or: [{ ownerAddress: userAddress }, { reviewerAddress: userAddress }],
+          $sort: {
+            createdAt: -1,
+          },
+          $limit: itemsPerPage,
+          $skip: skipPages * itemsPerPage,
         },
       })
-      .subscribe(
-        resp => onSuccess(resp.data.map(campaign => new Campaign(campaign)).sort(Campaign.compare)),
-        onError,
-      );
+      .subscribe(resp => {
+        const newResp = Object.assign({}, resp, {
+          data: resp.data.map(c => new Campaign(c)),
+        });
+        onSuccess(newResp);
+      }, onError);
   }
 
   /**
@@ -147,25 +156,14 @@ class CampaignService {
           string name,
           string url,
           uint64 parentProject,
-          address reviewer,
-          string tokenName,
-          string tokenSymbol,
-          address escapeHatchCaller,
-          address escapeHatchDestination
+          address reviewer
           * */
 
           lppCampaignFactory
-            .newCampaign(
-              campaign.title,
-              '',
-              0,
-              campaign.reviewerAddress,
-              campaign.tokenName,
-              campaign.tokenSymbol,
+            .newCampaign(campaign.title, '', 0, campaign.reviewerAddress, {
               from,
-              from,
-              { from, $extraGas: 200000 },
-            )
+              $extraGas: 200000,
+            })
             .once('transactionHash', hash => {
               txHash = hash;
               campaign.txHash = txHash;

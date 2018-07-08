@@ -26,3 +26,11 @@ try {
 } catch (e) {
   console.error(e);
 }
+
+/* global document */
+ReactDOM.render(
+  <Application />, // eslint-disable-line react/jsx-filename-extension
+  document.getElementById('root'),
+);
+
+registerServiceWorker();

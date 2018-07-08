@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Prompt } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Form, Input } from 'formsy-react-components';
 
@@ -38,7 +39,10 @@ class EditDAC extends Component {
       dac: new DAC({
         owner: props.currentUser,
       }),
+      isBlocking: false,
     };
+
+    this.form = React.createRef();
 
     this.submit = this.submit.bind(this);
     this.setImage = this.setImage.bind(this);
@@ -90,8 +94,6 @@ class EditDAC extends Component {
   }
 
   submit() {
-    this.setState({ isSaving: true });
-
     const afterMined = url => {
       if (url) {
         const msg = (
@@ -123,17 +125,31 @@ class EditDAC extends Component {
       history.push('/my-dacs');
     };
 
-    // Save the DAC
-    this.state.dac.save(afterCreate, afterMined);
+    this.setState(
+      {
+        isSaving: true,
+        isBlocking: false,
+      },
+      () => {
+        // Save the DAC
+        this.state.dac.save(afterCreate, afterMined);
+      },
+    );
   }
 
   toggleFormValid(state) {
     this.setState({ formIsValid: state });
   }
 
+  triggerRouteBlocking() {
+    const form = this.form.current.formsyForm;
+    // we only block routing if the form state is not submitted
+    this.setState({ isBlocking: form && (!form.state.formSubmitted || form.state.isSubmitting) });
+  }
+
   render() {
     const { isNew } = this.props;
-    const { isLoading, isSaving, dac, formIsValid } = this.state;
+    const { isLoading, isSaving, dac, formIsValid, isBlocking } = this.state;
 
     return (
       <div id="edit-dac-view">
@@ -161,18 +177,25 @@ class EditDAC extends Component {
 
                   <Form
                     onSubmit={this.submit}
+                    ref={this.form}
                     mapping={inputs => {
                       dac.title = inputs.title;
                       dac.description = inputs.description;
                       dac.communityUrl = inputs.communityUrl;
-                      dac.tokenName = inputs.tokenName;
-                      dac.tokenSymbol = inputs.tokenSymbol;
                       dac.summary = getTruncatedText(inputs.description, 100);
                     }}
                     onValid={() => this.toggleFormValid(true)}
                     onInvalid={() => this.toggleFormValid(false)}
+                    onChange={e => this.triggerRouteBlocking(e)}
                     layout="vertical"
                   >
+                    <Prompt
+                      when={isBlocking}
+                      message={() =>
+                        `You have unsaved changes. Are you sure you want to navigate from this page?`
+                      }
+                    />
+
                     <Input
                       name="title"
                       id="title-input"
@@ -223,47 +246,11 @@ class EditDAC extends Component {
                         type="text"
                         value={dac.communityUrl}
                         placeholder="https://slack.giveth.com"
-                        help="Where can people join your community? Giveth redirect people there."
+                        help="Where can people join your community? Paste a link here for your community's website, social or chatroom."
                         validations="isUrl"
                         validationErrors={{
                           isUrl: 'Please provide a url.',
                         }}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <Input
-                        name="tokenName"
-                        id="token-name-input"
-                        label="Token Name"
-                        type="text"
-                        value={dac.tokenName}
-                        help="The name of the token that givers will receive when they donate to
-                        this dac."
-                        validations="minLength:3"
-                        validationErrors={{
-                          minLength: 'Please provide at least 3 characters.',
-                        }}
-                        required
-                        disabled={!isNew}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <Input
-                        name="tokenSymbol"
-                        id="token-symbol-input"
-                        label="Token Symbol"
-                        type="text"
-                        value={dac.tokenSymbol}
-                        help="The symbol of the token that givers will receive when they donate to
-                        this dac."
-                        validations="minLength:2"
-                        validationErrors={{
-                          minLength: 'Please provide at least 2 characters.',
-                        }}
-                        required
-                        disabled={!isNew}
                       />
                     </div>
 

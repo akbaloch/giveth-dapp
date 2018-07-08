@@ -1,5 +1,4 @@
 import { LPPCampaign } from 'lpp-campaign';
-import { LPPDac } from 'lpp-dac';
 import { utils } from 'web3';
 import BigNumber from 'bignumber.js';
 
@@ -99,11 +98,13 @@ class DonationService {
 
           if (ownerType.toLowerCase() === 'campaign') {
             contract = new LPPCampaign(web3, ownerEntity.pluginAddress);
-          } else {
-            contract = new LPPDac(web3, delegateEntity.pluginAddress);
-          }
 
-          return contract.mTransfer(pledges, receiverId, {
+            return contract.mTransfer(pledges, receiverId, {
+              from,
+              $extraGas: 100000,
+            });
+          }
+          return network.liquidPledging.mtransfer(pledges, receiverId, {
             from,
             $extraGas: 100000,
           });
@@ -195,15 +196,9 @@ class DonationService {
         const receiverId = delegateTo.type === 'dac' ? delegateTo.delegateId : delegateTo.projectId;
 
         const executeTransfer = () => {
-          let contract;
-
           if (donation.ownerType === 'campaign') {
-            contract = new LPPCampaign(web3, donation.ownerEntity.pluginAddress);
-          } else if (donation.ownerType === 'giver' && donation.delegate > 0) {
-            contract = new LPPDac(web3, donation.delegateEntity.pluginAddress);
-          }
+            const contract = new LPPCampaign(web3, donation.ownerEntity.pluginAddress);
 
-          if (contract) {
             return contract.transfer(donation.pledgeId, amount, receiverId, {
               from,
               $extraGas: 100000,

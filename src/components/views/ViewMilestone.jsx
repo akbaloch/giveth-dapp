@@ -108,22 +108,28 @@ class ViewMilestone extends Component {
   editMilestone(e) {
     e.stopPropagation();
 
-    checkWalletBalance(this.props.wallet).then(() => {
-      React.swal({
-        title: 'Edit Milestone?',
-        text: 'Are you sure you want to edit this milestone?',
-        icon: 'warning',
-        dangerMode: true,
-        buttons: ['Cancel', 'Yes, edit'],
-      }).then(isConfirmed => {
-        if (isConfirmed) {
-          redirectAfterWalletUnlock(
-            `/campaigns/${this.state.campaign.id}/milestones/${this.state.id}/edit`,
-            this.props.wallet,
-          );
+    checkWalletBalance(this.props.wallet)
+      .then(() => {
+        React.swal({
+          title: 'Edit Milestone?',
+          text: 'Are you sure you want to edit this milestone?',
+          icon: 'warning',
+          dangerMode: true,
+          buttons: ['Cancel', 'Yes, edit'],
+        }).then(isConfirmed => {
+          if (isConfirmed) {
+            redirectAfterWalletUnlock(
+              `/campaigns/${this.state.campaign.id}/milestones/${this.state.id}/edit`,
+              this.props.wallet,
+            );
+          }
+        });
+      })
+      .catch(err => {
+        if (err === 'noBalance') {
+          // handle no balance error
         }
       });
-    });
   }
 
   renderDescription() {
@@ -236,16 +242,17 @@ class ViewMilestone extends Component {
                     <GoBackButton history={history} styleName="inline" />
 
                     {(isOwner(ownerAddress, currentUser) ||
-                      isOwner(campaignOwnerAddress, currentUser)) && (
-                      <span className="pull-right">
-                        <button
-                          className="btn btn-link btn-edit"
-                          onClick={e => this.editMilestone(e)}
-                        >
-                          <i className="fa fa-edit" />
-                        </button>
-                      </span>
-                    )}
+                      isOwner(campaignOwnerAddress, currentUser)) &&
+                      ['proposed', 'rejected', 'InProgress', 'NeedsReview'].includes(status) && (
+                        <span className="pull-right">
+                          <button
+                            className="btn btn-link btn-edit"
+                            onClick={e => this.editMilestone(e)}
+                          >
+                            <i className="fa fa-edit" />
+                          </button>
+                        </span>
+                      )}
 
                     <center>
                       <Link to={`/profile/${ownerAddress}`}>
@@ -324,13 +331,11 @@ class ViewMilestone extends Component {
                                 <td className="td-user">
                                   <Link to={`/profile/${reviewerAddress}`}>
                                     <Avatar size={30} src={getUserAvatar(reviewer)} round />
-                                    <span>{getUserName(reviewer)}</span>
+                                    <p>{getUserName(reviewer)}</p>
                                   </Link>
                                 </td>
                                 {etherScanUrl && (
                                   <td className="td-address">
-                                    {' '}
-                                    -{' '}
                                     <a href={`${etherScanUrl}address/${reviewerAddress}`}>
                                       {reviewerAddress}
                                     </a>
@@ -356,13 +361,11 @@ class ViewMilestone extends Component {
                                 <td className="td-user">
                                   <Link to={`/profile/${recipientAddress}`}>
                                     <Avatar size={30} src={getUserAvatar(recipient)} round />
-                                    <span>{getUserName(recipient)}</span>
+                                    <p>{getUserName(recipient)}</p>
                                   </Link>
                                 </td>
                                 {etherScanUrl && (
                                   <td className="td-address">
-                                    {' '}
-                                    -{' '}
                                     <a href={`${etherScanUrl}address/${recipientAddress}`}>
                                       {recipientAddress}
                                     </a>
