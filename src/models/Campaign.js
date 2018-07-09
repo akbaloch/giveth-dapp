@@ -30,6 +30,7 @@ class Campaign extends BasicModel {
     this.reviewerAddress = data.reviewerAddress;
     this.ownerAddress = data.ownerAddress;
     this._id = data._id;
+    this._type = 'campaign';
   }
 
   toFeathers() {
@@ -48,6 +49,10 @@ class Campaign extends BasicModel {
       reviewerAddress: this.reviewerAddress,
       status: this.status,
     };
+  }
+
+  get type() {
+    return this._type;
   }
 
   get isActive() {

@@ -30,7 +30,7 @@ class DonationService {
     onSuccess = () => {},
     onError = () => {},
   ) {
-    const { ownerType, ownerEntity, delegateEntity } = donations[0];
+    const { ownerType, ownerEntity, delegateEntity, delegate } = donations[0];
     let txHash;
     let etherScanUrl;
     const pledgedDonations = []; // Donations that have been pledged and should be updated in feathers
@@ -51,6 +51,7 @@ class DonationService {
 
         let donatedAmount = new BigNumber(donation.amount);
 
+        // The next donation is too big, we have to split it
         if (currentAmount.plus(donatedAmount).isGreaterThan(maxAmount)) {
           donatedAmount = maxAmount.minus(currentAmount);
           fullyDonated = false;
@@ -87,10 +88,6 @@ class DonationService {
       .then(([network, web3, pledges]) => {
         etherScanUrl = network.etherscan;
 
-        const from =
-          ownerType.toLowerCase() === 'campaign'
-            ? ownerEntity.ownerAddress
-            : delegateEntity.ownerAddress;
         const receiverId = delegateTo.projectId;
 
         const executeTransfer = () => {
@@ -100,12 +97,12 @@ class DonationService {
             contract = new LPPCampaign(web3, ownerEntity.pluginAddress);
 
             return contract.mTransfer(pledges, receiverId, {
-              from,
+              from: ownerEntity.ownerAddress,
               $extraGas: 100000,
             });
           }
-          return network.liquidPledging.mtransfer(pledges, receiverId, {
-            from,
+          return network.liquidPledging.mTransfer(delegate, pledges, receiverId, {
+            from: delegateEntity.ownerAddress,
             $extraGas: 100000,
           });
         };
@@ -137,6 +134,9 @@ class DonationService {
                   });
                 }
               }
+
+              console.log('Patching:');
+              console.log(d.donation.id, mutation);
 
               feathersClient
                 .service('/donations')

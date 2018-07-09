@@ -110,13 +110,7 @@ class DelegateMultipleButton extends Component {
 
     switch (entity.type) {
       case 'dac':
-        options.$or = [
-          { delegateId: entity.id },
-          {
-            ownerId: this.props.currentUser.address,
-            $not: { delegateId: { $gt: '0' } },
-          },
-        ];
+        options.delegate = entity.delegateId;
         break;
       case 'campaign':
         options.ownerId = entity.id;
@@ -204,7 +198,7 @@ class DelegateMultipleButton extends Component {
     DonationService.delegateMultiple(
       this.state.delegations,
       utils.toWei(model.amount),
-      this.props.campaign || this.props.milestone,
+      this.props.campaign || Object.assign({ type: 'milestone' }, this.props.milestone),
       onCreated,
       onSuccess,
     );
@@ -224,7 +218,7 @@ class DelegateMultipleButton extends Component {
 
     return (
       <span style={style}>
-        <button className="btn btn-info" onClick={() => this.openDialog()}>
+        <button type="button" className="btn btn-info" onClick={() => this.openDialog()}>
           Delegate
         </button>
 
@@ -295,7 +289,14 @@ class DelegateMultipleButton extends Component {
                         value={Number(this.state.amount)}
                         labels={{ 0: '0', [this.state.maxAmount]: this.state.maxAmount }}
                         format={val => `${val} ETH`}
-                        onChange={amount => this.setState({ amount: Number(amount).toFixed(2) })}
+                        onChange={amount =>
+                          this.setState(prevState => ({
+                            amount:
+                              Number(amount).toFixed(2) > prevState.maxAmount
+                                ? prevState.maxAmount
+                                : Number(amount).toFixed(2),
+                          }))
+                        }
                       />
                     </div>
 
@@ -307,9 +308,9 @@ class DelegateMultipleButton extends Component {
                         }`}
                         validationErrors={{
                           greaterThan: 'Enter value greater than 0',
-                          lessOrEqualTo: `The donation you are delegating has value of ${
+                          lessOrEqualTo: `The donations you are delegating have combined value of ${
                             this.state.maxAmount
-                          }. Do not input higher amount.`,
+                          }. Do not input higher amount than that.`,
                           isNumeric: 'Provide correct number',
                         }}
                         name="amount"

@@ -467,7 +467,6 @@ class DonateButton extends React.Component {
                 <Input
                   name="amount"
                   ref="amountInput"
-                  id="amount-input"
                   label="How much Ξ do you want to donate?"
                   type="number"
                   value={amount}
